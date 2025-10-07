@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>안전한 주거환경 실습</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Montserrat:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero__content">
+        <p class="badge">학생 실습</p>
+        <h1>우리 집 안전 점검 미션</h1>
+        <p class="subtitle">
+          방마다 숨어 있는 위험요소를 찾고, 어떻게 개선할 수 있을지 생각해 보세요.
+          각 위험요소를 기록하면 나만의 안전 계획이 만들어져요!
+        </p>
+        <button id="startTour" class="hero__button">미션 시작</button>
+      </div>
+      <div class="hero__illustration" aria-hidden="true">
+        <div class="house">
+          <div class="house__roof"></div>
+          <div class="house__body"></div>
+          <div class="house__window"></div>
+          <div class="house__door"></div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="guidance" id="intro">
+        <h2>어떻게 참여하나요?</h2>
+        <ol>
+          <li>집안을 살펴보며 위험할 수 있는 상황이나 물건을 떠올립니다.</li>
+          <li>아래에서 해당 공간을 선택한 뒤, 위험요소 카드를 클릭해 세부 내용을 확인합니다.</li>
+          <li>필요하다고 느끼는 카드를 "안전 계획에 추가"해 개선 방법을 정리해 보세요.</li>
+        </ol>
+        <p class="tip">
+          ⚡ 한 공간에도 여러 위험요소가 있을 수 있어요. 다양하게 조합하며 점검해 보세요!
+        </p>
+      </section>
+
+      <section class="workspace">
+        <aside class="workspace__aside" aria-label="점검 공간 선택">
+          <h2>점검할 공간</h2>
+          <div id="roomSelector" class="room-selector" role="tablist"></div>
+          <div class="legend">
+            <p class="legend__title">위험 신호</p>
+            <ul>
+              <li><span class="level level--high"></span>위험도 높음</li>
+              <li><span class="level level--medium"></span>위험도 보통</li>
+              <li><span class="level level--low"></span>위험도 낮음</li>
+            </ul>
+          </div>
+        </aside>
+
+        <section class="workspace__main" aria-live="polite">
+          <div class="workspace__header">
+            <h2 id="roomTitle">공간을 선택해 주세요</h2>
+            <p id="roomDescription" class="room-description"></p>
+          </div>
+          <div id="hazardGrid" class="hazard-grid" aria-live="polite"></div>
+        </section>
+      </section>
+
+      <section class="plan" aria-label="나의 안전 계획">
+        <div class="plan__header">
+          <h2>나의 안전 계획</h2>
+          <p>
+            선택한 위험요소와 개선 방법이 여기에 모여요. 가족과 함께 공유해도 좋아요.
+          </p>
+        </div>
+        <div id="planList" class="plan__list"></div>
+        <div class="plan__actions">
+          <button id="clearPlan" class="plan__button plan__button--secondary">
+            계획 초기화
+          </button>
+          <button id="downloadPlan" class="plan__button">PDF로 저장</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>스스로 안전을 지켜요 · 오늘의 점검이 내일의 안전을 만듭니다.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
