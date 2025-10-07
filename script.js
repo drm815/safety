@@ -518,4 +518,3 @@ function initialize() {
 }
 
 initialize();
-initialize();
