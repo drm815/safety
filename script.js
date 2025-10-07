@@ -444,3 +444,30 @@ function downloadPlan() {
     doc.setFont(undefined, "normal");
     doc.text(lines, margin, y);
     y += lines.length * 6 + 4;
+    
+    if (y > 270 && index !== planItems.length - 1) {
+      doc.addPage();
+      y = margin;
+    }
+  });
+
+  doc.save("home-safety-plan.pdf");
+}
+
+function handleStartTour() {
+  const firstRoom = rooms[0];
+  selectRoom(firstRoom.id);
+  window.scrollTo({ top: introSection.offsetTop - 20, behavior: "smooth" });
+}
+
+function initialize() {
+  renderRoomButtons();
+  renderPlan();
+  selectRoom(rooms[0].id, { scroll: false });
+
+  clearPlanButton.addEventListener("click", clearPlan);
+  downloadPlanButton.addEventListener("click", downloadPlan);
+  startTourButton.addEventListener("click", handleStartTour);
+}
+
+initialize();
