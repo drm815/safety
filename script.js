@@ -416,42 +416,89 @@ function clearPlan() {
   renderPlan();
 }
 
-function downloadPlan() {
+async function downloadPlan() {
   if (planItems.length === 0) {
     alert("먼저 위험요소를 선택해 계획을 채워 주세요!");
     return;
   }
 
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const margin = 16;
-  let y = margin;
+  if (typeof window.html2canvas !== "function") {
+    alert("PDF 생성을 위한 도구를 불러오지 못했어요. 페이지를 새로고침한 뒤 다시 시도해 주세요.");
+    return;
+  }
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
-  doc.text("우리 집 안전 계획", margin, y);
-  y += 10;
+  const printable = document.createElement("section");
+  printable.className = "plan-printable";
 
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "normal");
+  const title = document.createElement("h1");
+  title.textContent = "우리 집 안전 계획";
+
+  const intro = document.createElement("p");
+  intro.className = "plan-printable__intro";
+  intro.textContent = "학생이 직접 선택한 위험요소와 개선 방법을 정리한 내용이에요.";
+
+  const list = document.createElement("ol");
+  list.className = "plan-printable__list";
 
   planItems.forEach((item, index) => {
-    doc.setFont(undefined, "bold");
-    doc.text(`${index + 1}. ${item.title} (${item.room})`, margin, y);
-    y += 7;
+    const listItem = document.createElement("li");
+    listItem.className = "plan-printable__item";
 
-    const lines = doc.splitTextToSize(item.improvement, 180);
-    doc.setFont(undefined, "normal");
-    doc.text(lines, margin, y);
-    y += lines.length * 6 + 4;
+    const itemTitle = document.createElement("h2");
+    itemTitle.className = "plan-printable__item-title";
+    itemTitle.textContent = `${index + 1}. ${item.title}`;
 
-    if (y > 270 && index !== planItems.length - 1) {
-      doc.addPage();
-      y = margin;
-    }
+    const itemRoom = document.createElement("p");
+    itemRoom.className = "plan-printable__item-room";
+    itemRoom.textContent = `점검 공간: ${item.room}`;
+
+    const itemBody = document.createElement("p");
+    itemBody.className = "plan-printable__item-body";
+    itemBody.textContent = item.improvement;
+
+    listItem.append(itemTitle, itemRoom, itemBody);
+    list.appendChild(listItem);
   });
 
-  doc.save("home-safety-plan.pdf");
+  printable.append(title, intro, list);
+  document.body.appendChild(printable);
+
+  try {
+    await document.fonts?.ready;
+
+    const canvas = await window.html2canvas(printable, {
+      scale: 2,
+      backgroundColor: "#ffffff"
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit: "mm", format: "a4" });
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = pdfWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let position = 0;
+    let heightLeft = imgHeight;
+
+    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+    heightLeft -= pdfHeight;
+
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
+    }
+
+    pdf.save("home-safety-plan.pdf");
+  } catch (error) {
+    console.error(error);
+    alert("PDF를 저장하는 중 문제가 발생했어요. 잠시 후 다시 시도해 주세요.");
+  } finally {
+    printable.remove();
+  }
 }
 
 function handleStartTour() {
